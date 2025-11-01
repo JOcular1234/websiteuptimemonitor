@@ -1,22 +1,18 @@
 # Test your deployed Uptime Monitor Agent
 # Replace YOUR_RAILWAY_URL with your actual Railway URL
 
-$RAILWAY_URL = "https://websiteuptimemonitor-production.up.railway.app/a2a/agent/uptimeAgent"
+$RAILWAY_URL = "https://websiteuptimemonitor-production.up.railway.app/api/agents/uptimeAgent/generate"
 
 Write-Host "Testing deployed agent at: $RAILWAY_URL" -ForegroundColor Cyan
 Write-Host ""
 
 $body = @{
-    jsonrpc = "2.0"
-    id = "test-1"
-    params = @{
-        messages = @(
-            @{
-                role = "user"
-                content = "Check if google.com is up"
-            }
-        )
-    }
+    messages = @(
+        @{
+            role = "user"
+            content = "Check if google.com is up"
+        }
+    )
 } | ConvertTo-Json -Depth 10
 
 try {
