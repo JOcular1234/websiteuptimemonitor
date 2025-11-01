@@ -45,7 +45,7 @@ railway domain
 **Post-Deployment:**
 1. Copy the generated URL (e.g., `https://your-app.railway.app`)
 2. Update `telex-workflow.json` with `https://your-app.railway.app/api/a2a`
-3. Test: `curl https://your-app.railway.app/api/a2a`
+3. Test: `curl https://websiteuptimemonitor-production.up.railway.app/api/a2a`
 
 ---
 

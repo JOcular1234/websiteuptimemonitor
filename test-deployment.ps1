@@ -1,9 +1,9 @@
 # Test your deployed Uptime Monitor Agent
 # Replace YOUR_RAILWAY_URL with your actual Railway URL
 
-$RAILWAY_URL = "https://websiteuptimemonitor-production.up.railway.app"
+$RAILWAY_URL = "https://websiteuptimemonitor-production.up.railway.app/a2a/agent/uptimeAgent"
 
-Write-Host "Testing deployed agent at: $RAILWAY_URL/api/a2a" -ForegroundColor Cyan
+Write-Host "Testing deployed agent at: $RAILWAY_URL" -ForegroundColor Cyan
 Write-Host ""
 
 $body = @{
@@ -20,7 +20,7 @@ $body = @{
 } | ConvertTo-Json -Depth 10
 
 try {
-    $response = Invoke-RestMethod -Uri "$RAILWAY_URL/api/a2a" -Method Post -Body $body -ContentType "application/json"
+    $response = Invoke-RestMethod -Uri "$RAILWAY_URL" -Method Post -Body $body -ContentType "application/json"
     
     Write-Host "✅ SUCCESS! Agent is working!" -ForegroundColor Green
     Write-Host ""
@@ -35,7 +35,7 @@ try {
 
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Cyan
-Write-Host "1. Update telex-workflow.json with: $RAILWAY_URL/api/a2a"
+Write-Host "1. Update telex-workflow.json with: $RAILWAY_URL"
 Write-Host "2. Import workflow to Telex.im"
 Write-Host "3. Test in Telex chat!"
 
