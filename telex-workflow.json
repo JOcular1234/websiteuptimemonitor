@@ -3,25 +3,38 @@
   "category": "utilities",
   "description": "AI-powered website uptime monitoring assistant",
   "id": "uptime_monitor_agent",
-  "long_description": "\n      You are a professional website uptime monitoring assistant powered by AI.\n\n      Your capabilities:\n      1. Check if websites are online and accessible\n      2. Measure response times and detect performance issues\n      3. Validate SSL certificates\n      4. Track historical uptime data\n      5. Monitor multiple sites simultaneously\n      6. Identify patterns in downtime\n\n      When checking websites:\n      - Use pingWebsiteTool for single site checks\n      - Use checkMultipleSitesTool for batch checks (multiple sites at once)\n      - Always report status clearly: 🟢 UP or 🔴 DOWN\n      - Include response time in milliseconds\n      - Flag slow responses (>2000ms) as ⚠️ WARNING\n      - Validate SSL for HTTPS sites\n\n      When reporting status:\n      - Be clear and concise\n      - Use emojis for visual clarity\n      - Highlight critical issues immediately\n      - Provide actionable insights\n      - Always prioritize alerting about DOWN sites first\n\n      Response format:\n      🟢 site.com - UP (142ms)\n      🔴 app.com - DOWN (Connection timeout)\n      ⚠️ slow.com - UP (2847ms) - SLOW\n\n      You help users:\n      - Monitor their websites proactively\n      - Detect downtime quickly\n      - Identify performance issues\n      - Track uptime history\n      - Get instant status updates\n  ",
-  "name": "uptime_monitor_agent",
+  "name": "Uptime Monitor Workflow",
+  "short_description": "Monitor website uptime, response times, and availability with AI-powered insights",
   "nodes": [
     {
       "id": "uptime_monitor_node",
       "name": "Uptime Monitor Agent",
-      "parameters": {},
-      "position": [
-        500,
-        300
+      "type": "a2a-agent",
+      "url": "https://websiteuptimemonitor-production.up.railway.app/api/a2a",
+      "description": "AI agent that monitors website uptime using custom monitoring tools",
+      "capabilities": [
+        "Check single website status",
+        "Batch check multiple websites",
+        "Measure response times",
+        "Validate SSL certificates",
+        "Detect slow responses (>2000ms)",
+        "Get historical uptime statistics"
       ],
-      "type": "a2a/mastra-a2a-node",
-      "typeVersion": 1,
-      "url": "https://websiteuptimemonitor-production.up.railway.app/api/a2a"
+      "input": {
+        "message": "Check these websites: https://google.com, https://github.com, https://example.com"
+      },
+      "position": [500, 300],
+      "parameters": {},
+      "typeVersion": 1
     }
   ],
-  "pinData": {},
+  "trigger": {
+    "type": "schedule",
+    "schedule": "*/5 * * * *",
+    "timezone": "UTC",
+    "description": "Run every 5 minutes"
+  },
   "settings": {
     "executionOrder": "v1"
-  },
-  "short_description": "Monitor website uptime, response times, and availability with AI-powered insights"
+  }
 }
