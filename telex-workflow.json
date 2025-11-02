@@ -16,7 +16,7 @@
       ],
       "type": "a2a/mastra-a2a-node",
       "typeVersion": 1,
-      "url": "https://squeaking-blue-whale.mastra.cloud/api/agents/uptimeAgent/generate"
+      "url": "https://websiteuptimemonitor-production.up.railway.app/api/a2a"
     }
   ],
   "pinData": {},
