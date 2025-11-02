@@ -10,7 +10,7 @@
       "id": "uptime_monitor_node",
       "name": "Uptime Monitor Agent",
       "type": "a2a-agent",
-      "url": "https://websiteuptimemonitor-production.up.railway.app/api/a2a",
+      "url": "https://9b30c1f5025d.ngrok-free.app/api/a2a",
       "description": "AI agent that monitors website uptime using custom monitoring tools",
       "capabilities": [
         "Check single website status",

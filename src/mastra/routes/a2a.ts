@@ -219,7 +219,7 @@ export function createA2AHandler(agent: Agent) {
 
       console.log('✅ Agent response:', result.text);
 
-      // Return A2A-compliant response
+      // Build A2A-compliant response
       const response = {
         jsonrpc: "2.0",
         id: body.id,
@@ -246,7 +246,54 @@ export function createA2AHandler(agent: Agent) {
         },
       };
 
-      console.log('📤 Sending response');
+      // Check if we need to push to webhook (non-blocking mode)
+      const pushConfig = body.params?.configuration?.pushNotificationConfig;
+      if (pushConfig?.url) {
+        console.log('📤 Pushing response to webhook:', pushConfig.url);
+        
+        // Push response to Telex webhook asynchronously
+        const webhookHeaders: Record<string, string> = {
+          'Content-Type': 'application/json',
+        };
+        
+        // Add Bearer token if provided
+        if (pushConfig.token) {
+          webhookHeaders['Authorization'] = `Bearer ${pushConfig.token}`;
+        }
+        
+        try {
+          const webhookResponse = await fetch(pushConfig.url, {
+            method: 'POST',
+            headers: webhookHeaders,
+            body: JSON.stringify(response),
+          });
+          
+          console.log('✅ Webhook push status:', webhookResponse.status);
+          
+          if (!webhookResponse.ok) {
+            const errorText = await webhookResponse.text();
+            console.error('❌ Webhook rejected:', errorText);
+          }
+          
+          // Return acknowledgment for non-blocking mode
+          return new Response(JSON.stringify({
+            jsonrpc: "2.0",
+            id: body.id,
+            result: {
+              status: "accepted",
+              message: "Processing asynchronously"
+            } 
+          }), {
+            status: 202,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        } catch (webhookError: any) {
+          console.error('❌ Webhook push failed:', webhookError.message);
+          // Fall through to return response directly
+        }
+      }
+
+      console.log('📤 Sending response directly');
 
       return new Response(JSON.stringify(response), {
         status: 200,
@@ -269,3 +316,6 @@ export function createA2AHandler(agent: Agent) {
     }
   };
 }
+
+
+
