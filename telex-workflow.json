@@ -21,7 +21,7 @@
         "Get historical uptime statistics"
       ],
       "input": {
-        "message": "Check these websites: https://google.com, https://github.com, https://example.com"
+        "message": "Check these websites: https://google.com, https://github.com, https://techquityfest.com"
       },
       "position": [500, 300],
       "parameters": {},
