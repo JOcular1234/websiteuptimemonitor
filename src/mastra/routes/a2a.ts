@@ -2,17 +2,43 @@ import { Agent } from "@mastra/core/agent";
 
 export function createA2AHandler(agent: Agent) {
   return async (req: any) => {
-    const body = await req.json();
-    
-    // Extract the user's message from A2A request
-    const userMessage = body.params?.messages?.[0]?.content || "";
-    
     try {
+      // Handle both Request object and plain object
+      let body;
+      if (req.json && typeof req.json === 'function') {
+        body = await req.json();
+      } else if (req.body) {
+        body = req.body;
+      } else {
+        body = req;
+      }
+      
+      // Extract the user's message from A2A request
+      const userMessage = body.params?.messages?.[0]?.content || "";
+      
+      if (!userMessage) {
+        return new Response(JSON.stringify({
+          jsonrpc: "2.0",
+          id: body.id || "error",
+          error: {
+            code: -32602,
+            message: "Invalid params: message content required"
+          }
+        }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      console.log(`Processing message: "${userMessage}"`);
+      
       // Generate response using the agent
       const result = await agent.generate(userMessage);
 
+      console.log(`Agent response: "${result.text}"`);
+
       // Return A2A-compliant response
-      return Response.json({
+      return new Response(JSON.stringify({
         jsonrpc: "2.0",
         id: body.id,
         result: {
@@ -36,15 +62,22 @@ export function createA2AHandler(agent: Agent) {
             ],
           },
         },
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
       });
     } catch (error: any) {
-      return Response.json({
+      console.error('A2A handler error:', error);
+      return new Response(JSON.stringify({
         jsonrpc: "2.0",
-        id: body.id,
+        id: "error",
         error: {
           code: -32000,
-          message: error.message,
-        },
+          message: error.message || "Internal server error"
+        }
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
       });
     }
   };

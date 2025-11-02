@@ -1,3 +1,4 @@
+// src/mastra/pages/api/a2a.ts
 import { a2aHandler } from "../../index";
 
 export default async function handler(req: any, res: any) {

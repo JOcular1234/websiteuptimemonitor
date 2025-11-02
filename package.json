@@ -22,7 +22,9 @@
     "@mastra/libsql": "^0.16.1",
     "@mastra/loggers": "^0.10.18",
     "@mastra/memory": "^0.15.10",
+    "@types/express": "^5.0.5",
     "axios": "^1.13.1",
+    "express": "^5.1.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
