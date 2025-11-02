@@ -153,9 +153,9 @@ import { Agent } from "@mastra/core/agent";
 
 export function createA2AHandler(agent: Agent) {
   return async (req: any) => {
+    // Handle both Request object and plain object
+    let body;
     try {
-      // Handle both Request object and plain object
-      let body;
       if (req.json && typeof req.json === 'function') {
         body = await req.json();
       } else if (req.body) {
@@ -172,44 +172,39 @@ export function createA2AHandler(agent: Agent) {
       // Format 1: Standard A2A (params.messages)
       if (body.params?.messages && Array.isArray(body.params.messages)) {
         userMessage = body.params.messages[0]?.content || "";
+        console.log('📝 Extracted from standard format:', userMessage);
       }
       // Format 2: Telex A2A (params.message.parts)
       else if (body.params?.message?.parts && Array.isArray(body.params.message.parts)) {
-        // Look for the FIRST text part ONLY (ignore conversation history in data)
-        for (const part of body.params.message.parts) {
-          if (part.kind === "text" && part.text) {
-            // Skip if it's HTML or generic greetings
-            const text = part.text.trim();
-            if (!text.startsWith('<') && 
-                !text.toLowerCase().includes('hello') &&
-                !text.toLowerCase().includes('how can i assist') &&
-                text.length > 0) {
-              userMessage = text;
-              break; // Use the first valid text we find
-            }
-          }
+        // Get the FIRST part with kind="text"
+        const firstTextPart = body.params.message.parts.find((part: any) => part.kind === "text");
+        if (firstTextPart && firstTextPart.text) {
+          userMessage = firstTextPart.text.trim();
+          console.log('📝 Extracted from Telex format:', userMessage);
         }
       }
       // Format 3: Direct message (fallback)
       else if (body.message) {
         userMessage = body.message;
+        console.log('📝 Extracted from direct message:', userMessage);
       }
       
-      // Clean up the message
-      userMessage = cleanMessage(userMessage);
-      
-      console.log('📝 Extracted message:', userMessage);
-      
       if (!userMessage) {
-        console.error('❌ No valid message found in request');
-        console.error('Request parts:', JSON.stringify(body.params?.message?.parts, null, 2));
+        console.error('❌ No message found in request');
+        console.error('Request structure:', JSON.stringify({
+          hasParamsMessages: !!body.params?.messages,
+          hasParamsMessageParts: !!body.params?.message?.parts,
+          hasDirectMessage: !!body.message,
+          parts: body.params?.message?.parts
+        }, null, 2));
+        
         return new Response(JSON.stringify({
           jsonrpc: "2.0",
           id: body.id || "error",
           error: {
             code: -32602,
             message: "Invalid params: message content required",
-            details: "Could not extract valid message from request. Please provide website URLs to check."
+            details: "Could not extract message from request. Please provide website URLs to check."
           }
         }), {
           status: 400,
@@ -261,7 +256,7 @@ export function createA2AHandler(agent: Agent) {
       console.error('❌ A2A handler error:', error);
       return new Response(JSON.stringify({
         jsonrpc: "2.0",
-        id: "error",
+        id: body.id || "error",
         error: {
           code: -32000,
           message: error.message || "Internal server error",
@@ -273,49 +268,4 @@ export function createA2AHandler(agent: Agent) {
       });
     }
   };
-}
-
-/**
- * Clean up message text
- * - Remove HTML tags
- * - Remove code blocks
- * - Remove duplicates
- * - Trim whitespace
- */
-function cleanMessage(text: string): string {
-  if (!text) return "";
-  
-  // Remove HTML/code block tags
-  let cleaned = text
-    .replace(/<pre[^>]*>.*?<\/pre>/gs, '') // Remove code blocks
-    .replace(/<code[^>]*>.*?<\/code>/gs, '') // Remove inline code
-    .replace(/<p[^>]*>/g, '') // Remove p tags
-    .replace(/<\/p>/g, ' ') // Replace closing p tags with space
-    .replace(/<[^>]+>/g, '') // Remove all other HTML tags
-    .replace(/&nbsp;/g, ' ') // Replace HTML entities
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&')
-    .replace(/\n/g, ' '); // Replace newlines with spaces
-  
-  // Remove common filler text
-  const fillerPhrases = [
-    'hello!',
-    'how can i assist',
-    'checking the status',
-    'please wait',
-    'please hold on',
-    '.'
-  ];
-  
-  for (const phrase of fillerPhrases) {
-    cleaned = cleaned.replace(new RegExp(phrase, 'gi'), '');
-  }
-  
-  // Clean up multiple spaces and trim
-  cleaned = cleaned
-    .replace(/\s+/g, ' ')
-    .trim();
-  
-  return cleaned;
 }
