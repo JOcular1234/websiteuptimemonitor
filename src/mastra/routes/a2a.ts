@@ -165,47 +165,24 @@ export function createA2AHandler(agent: Agent) {
       console.log('✅ Generated:', result.text);
 
       // Build response in Telex-compatible format
+      // Fields must be at top level of result, not nested
       const response = {
         jsonrpc: "2.0",
         id: body.id,
         result: {
-          // THIS IS THE KEY PART - Telex needs this to display in UI
-          message: {
-            kind: "message",
-            role: "assistant",
-            parts: [
-              {
-                kind: "text",
-                text: result.text
-              }
-            ],
-            messageId: `response-${body.id}`,
-          },
-          // Also include artifacts for compatibility
-          artifacts: [
+          kind: "message",
+          role: "assistant",
+          parts: [
             {
-              type: "text",
-              text: result.text,
-              title: "Uptime Status",
-            },
+              kind: "text",
+              text: result.text
+            }
           ],
-          // History for context
-          history: {
-            messages: [
-              {
-                role: "user",
-                content: userMessage,
-              },
-              {
-                role: "assistant",
-                content: result.text,
-              },
-            ],
-          },
+          messageId: `response-${body.id}`,
         },
       };
 
-      console.log('📤 Sending response with message field');
+      console.log('📤 Sending response:', JSON.stringify(response, null, 2));
 
       return new Response(JSON.stringify(response), {
         status: 200,
