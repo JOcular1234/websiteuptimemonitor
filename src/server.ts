@@ -20,14 +20,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// Root endpoint
+// Root endpoint - GET for info, POST for A2A
 app.get('/', (req, res) => {
   res.json({
     service: 'Uptime Monitor A2A API',
     status: 'running',
+    version: '1.0.0',
+    protocol: 'A2A (JSON-RPC 2.0)',
     endpoints: {
       health: '/health',
-      a2a: '/api/a2a'
+      a2a: ['/api/a2a', '/a2a', '/'],
     }
   });
 });
@@ -41,8 +43,8 @@ app.get('/health', (req, res) => {
   });
 });
 
-// A2A endpoint for Telex
-app.post('/api/a2a', async (req, res) => {
+// A2A handler function
+const handleA2ARequest = async (req: express.Request, res: express.Response) => {
   try {
     console.log('📨 Received A2A request:', JSON.stringify(req.body, null, 2));
     
@@ -65,7 +67,12 @@ app.post('/api/a2a', async (req, res) => {
       }
     });
   }
-});
+};
+
+// A2A endpoints (support multiple paths for compatibility)
+app.post('/api/a2a', handleA2ARequest);
+app.post('/a2a', handleA2ARequest);
+app.post('/', handleA2ARequest);
 
 // 404 handler
 app.use((req, res) => {
