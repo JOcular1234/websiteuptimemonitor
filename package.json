@@ -6,12 +6,10 @@
     "dev": "ts-node src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "mastra:dev": "mastra dev",
-    "preinstall": "npx npm-force-resolutions"
+    "mastra:dev": "mastra dev"
   },
   "dependencies": {
-    "@mastra/core": "^0.1.0",
-    "@sindresorhus/slugify": "2.2.0",
+    "@mastra/core": "latest",
     "axios": "^1.6.0",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
@@ -23,10 +21,9 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.3.0"
   },
-  "resolutions": {
-    "@sindresorhus/slugify": "2.2.0"
-  },
   "overrides": {
-    "@sindresorhus/slugify": "2.2.0"
+    "@mastra/core": {
+      "@sindresorhus/slugify": "1.1.2"
+    }
   }
 }
