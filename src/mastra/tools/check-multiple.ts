@@ -5,9 +5,9 @@ import axios from "axios";
 
 export const checkMultipleSitesTool = createTool({
   id: "check-multiple-sites",
-  description: "Check status of multiple websites at once",
+  description: "Check status of multiple websites at once. Accepts URLs with or without protocol (e.g., 'google.com' or 'https://google.com')",
   inputSchema: z.object({
-    urls: z.array(z.string().url()).describe("Array of website URLs"),
+    urls: z.array(z.string()).describe("Array of website URLs or domains"),
   }),
   outputSchema: z.object({
     results: z.array(
@@ -26,8 +26,16 @@ export const checkMultipleSitesTool = createTool({
     }),
   }),
   execute: async ({ context }) => {
+    // Normalize URLs by adding https:// if missing
+    const normalizedUrls = context.urls.map((url) => {
+      if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        return `https://${url}`;
+      }
+      return url;
+    });
+
     const results = await Promise.all(
-      context.urls.map(async (url) => {
+      normalizedUrls.map(async (url) => {
         const startTime = Date.now();
         try {
           const response = await axios.get(url, {
