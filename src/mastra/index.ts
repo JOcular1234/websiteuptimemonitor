@@ -7,6 +7,6 @@ export const mastra = new Mastra({
     uptimeAgent,
   },
   bundler: {
-    externals: ["axios"],
+    externals: ["axios", "@libsql/client"],
   },
 });
