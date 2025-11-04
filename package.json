@@ -23,7 +23,8 @@
   },
   "overrides": {
     "@mastra/core": {
-      "@sindresorhus/slugify": "1.1.2"
+      "@sindresorhus/slugify": "1.1.2",
+      "p-map": "4.0.0"
     }
   }
 }
