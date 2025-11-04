@@ -1,3 +1,4 @@
+// src/mastra/index.ts
 import { Mastra } from "@mastra/core/mastra";
 import { uptimeAgent } from "./agents/uptime-agent";
 import { createA2AHandler } from "./routes/a2a";
@@ -7,12 +8,7 @@ export const mastra = new Mastra({
     uptimeAgent,
   },
   bundler: {
-    externals: [
-      "axios",
-      "@mastra/loggers",
-      "@mastra/loggers-http",
-      "@mastra/libsql",
-    ],
+    externals: ["axios"],
   },
 });
 

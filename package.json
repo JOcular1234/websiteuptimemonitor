@@ -1,16 +1,21 @@
 {
   "name": "uptime-monitor-agent",
   "version": "1.0.0",
+  "type": "commonjs",
   "main": "dist/server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "dev": "ts-node src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "mastra:dev": "mastra dev",
-    "mastra:build": "mastra build"
+    "test:a2a": "node script/test-a2a.js"
   },
   "dependencies": {
     "@mastra/core": "latest",
+    "@sindresorhus/slugify": "2.2.0",
     "axios": "^1.6.0",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
@@ -23,9 +28,6 @@
     "typescript": "^5.3.0"
   },
   "overrides": {
-    "@mastra/core": {
-      "@sindresorhus/slugify": "1.1.2",
-      "p-map": "4.0.0"
-    }
+    "@sindresorhus/slugify": "2.2.0"
   }
 }
